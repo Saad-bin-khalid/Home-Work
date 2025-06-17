@@ -1,0 +1,119 @@
+# library.py
+
+def add_book():
+    title = input("Enter Book Title: ")
+    author = input("Enter Book Author: ")
+    isbn = input("Enter Book ISBN: ")
+    with open("books.txt", "a") as f:
+        f.write(f"{title}|{author}|{isbn}|Available\n")
+    print("Book added successfully.\n")
+
+
+def display_books():
+    try:
+        with open("books.txt", "r") as f:
+            books = f.readlines()
+            if not books:
+                print("No books found.\n")
+                return
+            print("\nAll Books:")
+            for book in books:
+                title, author, isbn, status = book.strip().split("|")
+                print(f"Title: {title}, Author: {author}, ISBN: {isbn}, Status: {status}")
+            print()
+    except FileNotFoundError:
+        print("No records found. Add a book first.\n")
+
+
+def search_book():
+    key = input("Enter Title or ISBN to search: ")
+    found = False
+    try:
+        with open("books.txt", "r") as f:
+            for book in f:
+                title, author, isbn, status = book.strip().split("|")
+                if key in title or key == isbn:
+                    print(f"\nFound Book - Title: {title}, Author: {author}, ISBN: {isbn}, Status: {status}\n")
+                    found = True
+                    break
+        if not found:
+            print("Book not found.\n")
+    except FileNotFoundError:
+        print("No records found.\n")
+
+
+def issue_book():
+    isbn = input("Enter ISBN to issue: ")
+    updated = False
+    try:
+        with open("books.txt", "r") as f:
+            books = f.readlines()
+        with open("books.txt", "w") as f:
+            for book in books:
+                title, author, book_isbn, status = book.strip().split("|")
+                if isbn == book_isbn and status == "Available":
+                    f.write(f"{title}|{author}|{book_isbn}|Issued\n")
+                    updated = True
+                else:
+                    f.write(book)
+        if updated:
+            print("Book issued successfully.\n")
+        else:
+            print("Book not available or already issued.\n")
+    except FileNotFoundError:
+        print("No records found.\n")
+
+
+def return_book():
+    isbn = input("Enter ISBN to return: ")
+    updated = False
+    try:
+        with open("books.txt", "r") as f:
+            books = f.readlines()
+        with open("books.txt", "w") as f:
+            for book in books:
+                title, author, book_isbn, status = book.strip().split("|")
+                if isbn == book_isbn and status == "Issued":
+                    f.write(f"{title}|{author}|{book_isbn}|Available\n")
+                    updated = True
+                else:
+                    f.write(book)
+        if updated:
+            print("Book returned successfully.\n")
+        else:
+            print("Book not found or already available.\n")
+    except FileNotFoundError:
+        print("No records found.\n")
+
+
+def menu():
+    while True:
+        print("Library Book Management")
+        print("1. Add Book")
+        print("2. Display Books")
+        print("3. Search Book")
+        print("4. Issue Book")
+        print("5. Return Book")
+        print("6. Exit")
+
+        choice = input("Enter your choice (1-6): ")
+        print()
+        if choice == '1':
+            add_book()
+        elif choice == '2':
+            display_books()
+        elif choice == '3':
+            search_book()
+        elif choice == '4':
+            issue_book()
+        elif choice == '5':
+            return_book()
+        elif choice == '6':
+            print("Exiting... Goodbye!")
+            break
+        else:
+            print("Invalid choice. Try again.\n")
+
+
+# Start the program
+menu()
