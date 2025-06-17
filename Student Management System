@@ -1,0 +1,119 @@
+filename = "students.txt"
+
+def create_student():
+    name = input("Enter name: ")
+    roll = input("Enter roll number: ")
+    std_class = input("Enter class: ")
+    marks = input("Enter marks: ")
+    return f"{name}|{roll}|{std_class}|{marks}\n"
+
+def add_student():
+    roll = input("Enter roll number: ")
+    if search_student(roll, show=False):
+        print("Student with this roll number already exists.")
+        return
+    name = input("Enter name: ")
+    std_class = input("Enter class: ")
+    marks = input("Enter marks: ")
+    with open(filename, "a") as f:
+        f.write(f"{name}|{roll}|{std_class}|{marks}\n")
+    print("Student added successfully.")
+
+def display_students():
+    try:
+        with open(filename, "r") as f:
+            lines = f.readlines()
+            if not lines:
+                print("No student records found.")
+                return
+            for line in lines:
+                name, roll, std_class, marks = line.strip().split("|")
+                print(f"Name: {name}, Roll: {roll}, Class: {std_class}, Marks: {marks}")
+    except FileNotFoundError:
+        print("No records file found yet.")
+
+def search_student(roll=None, show=True):
+    if not roll:
+        roll = input("Enter roll number to search: ")
+    found = False
+    try:
+        with open(filename, "r") as f:
+            for line in f:
+                name, r, std_class, marks = line.strip().split("|")
+                if r == roll:
+                    if show:
+                        print(f"Student found: Name: {name}, Roll: {r}, Class: {std_class}, Marks: {marks}")
+                    found = True
+                    break
+    except FileNotFoundError:
+        pass
+    if not found and show:
+        print("Student not found.")
+    return found
+
+def update_student():
+    roll = input("Enter roll number to update: ")
+    updated = False
+    try:
+        with open(filename, "r") as f:
+            lines = f.readlines()
+        with open(filename, "w") as f:
+            for line in lines:
+                name, r, std_class, marks = line.strip().split("|")
+                if r == roll:
+                    print(f"Current Data - Name: {name}, Class: {std_class}, Marks: {marks}")
+                    name = input("Enter new name: ")
+                    std_class = input("Enter new class: ")
+                    marks = input("Enter new marks: ")
+                    f.write(f"{name}|{r}|{std_class}|{marks}\n")
+                    updated = True
+                else:
+                    f.write(line)
+        if updated:
+            print("Student updated successfully.")
+        else:
+            print("Student not found.")
+    except FileNotFoundError:
+        print("No records file found yet.")
+
+def delete_student():
+    roll = input("Enter roll number to delete: ")
+    deleted = False
+    try:
+        with open(filename, "r") as f:
+            lines = f.readlines()
+        with open(filename, "w") as f:
+            for line in lines:
+                name, r, std_class, marks = line.strip().split("|")
+                if r == roll:
+                    deleted = True
+                    continue
+                f.write(line)
+        if deleted:
+            print("Student deleted successfully.")
+        else:
+            print("Student not found.")
+    except FileNotFoundError:
+        print("No records file found yet.")
+
+def menu():
+    while True:
+        print("\n1. Add Student\n2. Display Students\n3. Search Student\n4. Update Student\n5. Delete Student\n6. Exit")
+        choice = input("Enter your choice: ")
+        if choice == "1":
+            add_student()
+        elif choice == "2":
+            display_students()
+        elif choice == "3":
+            search_student()
+        elif choice == "4":
+            update_student()
+        elif choice == "5":
+            delete_student()
+        elif choice == "6":
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice. Try again.")
+
+menu()
