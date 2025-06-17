@@ -1,0 +1,125 @@
+# === Basic Banking System ===
+
+# File names
+account_file = "accounts.txt"
+transaction_file = "transactions.txt"
+
+# Create Account
+def create_account():
+    name = input("Enter account holder name: ")
+    acc_no = input("Enter new account number: ")
+    balance = 0  # Start balance
+
+    with open(account_file, "a") as f:
+        f.write(f"{acc_no},{name},{balance}\n")
+
+    print("✅ Account created successfully.")
+
+# Deposit Money
+def deposit():
+    acc_no = input("Enter account number: ")
+    amount = float(input("Enter amount to deposit: "))
+    updated_lines = []
+    found = False
+
+    with open(account_file, "r") as f:
+        for line in f:
+            acc, name, bal = line.strip().split(",")
+            if acc == acc_no:
+                bal = float(bal) + amount
+                updated_lines.append(f"{acc},{name},{bal}\n")
+                found = True
+            else:
+                updated_lines.append(line)
+
+    if found:
+        with open(account_file, "w") as f:
+            f.writelines(updated_lines)
+
+        with open(transaction_file, "a") as f:
+            f.write(f"{acc_no},Deposit,{amount}\n")
+
+        print("💸 Deposit successful.")
+    else:
+        print("❌ Account not found.")
+
+# Withdraw Money
+def withdraw():
+    acc_no = input("Enter account number: ")
+    amount = float(input("Enter amount to withdraw: "))
+    updated_lines = []
+    found = False
+
+    with open(account_file, "r") as f:
+        for line in f:
+            acc, name, bal = line.strip().split(",")
+            if acc == acc_no:
+                bal = float(bal)
+                if bal >= amount:
+                    bal -= amount
+                    updated_lines.append(f"{acc},{name},{bal}\n")
+                    with open(transaction_file, "a") as tf:
+                        tf.write(f"{acc_no},Withdraw,{amount}\n")
+                    print("💳 Withdrawal successful.")
+                else:
+                    print("❌ Insufficient balance.")
+                    updated_lines.append(line)
+                found = True
+            else:
+                updated_lines.append(line)
+
+    if found:
+        with open(account_file, "w") as f:
+            f.writelines(updated_lines)
+    else:
+        print("❌ Account not found.")
+
+# Check Balance
+def check_balance():
+    acc_no = input("Enter account number: ")
+    with open(account_file, "r") as f:
+        for line in f:
+            acc, name, bal = line.strip().split(",")
+            if acc == acc_no:
+                print(f"👤 Name: {name}")
+                print(f"💰 Balance: {bal}")
+                return
+    print("❌ Account not found.")
+
+# Transaction History
+def transaction_history():
+    acc_no = input("Enter account number: ")
+    print("📄 Transaction History:")
+    with open(transaction_file, "r") as f:
+        for line in f:
+            acc, t_type, amount = line.strip().split(",")
+            if acc == acc_no:
+                print(f"{t_type} of {amount}")
+
+# Menu
+while True:
+    print("\n===== Bank Menu =====")
+    print("1. Create Account")
+    print("2. Deposit")
+    print("3. Withdraw")
+    print("4. Check Balance")
+    print("5. Transaction History")
+    print("6. Exit")
+
+    choice = input("Enter your choice (1-6): ")
+
+    if choice == '1':
+        create_account()
+    elif choice == '2':
+        deposit()
+    elif choice == '3':
+        withdraw()
+    elif choice == '4':
+        check_balance()
+    elif choice == '5':
+        transaction_history()
+    elif choice == '6':
+        print("👋 Exiting program.")
+        break
+    else:
+        print("❌ Invalid choice.")
